@@ -59,7 +59,7 @@ impl FailureLocation {
                 expression.evaluate(
                     &|_| vec![],
                     &|_| panic!("virtual selectors are removed during optimization"),
-                    &|query| vec![cs.fixed_queries[query.index].0.into()],
+                    &|query| vec![cs.fixed_queries[query.index].into()],
                     &|query| vec![cs.advice_queries[query.index].0.into()],
                     &|query| vec![cs.instance_queries[query.index].0.into()],
                     &|a| a,
@@ -443,7 +443,15 @@ fn render_lookup<F: FieldExt>(
             &|_| panic!("virtual selectors are removed during optimization"),
             &cell_value(
                 Any::Fixed,
-                &util::load(n, row, &cs.fixed_queries, &prover.fixed),
+                &util::load(
+                    n,
+                    row,
+                    &cs.fixed_queries
+                        .iter()
+                        .map(|&c| (c, Rotation::cur()))
+                        .collect::<Vec<_>>(),
+                    &prover.fixed,
+                ),
             ),
             &cell_value(
                 Any::Advice,

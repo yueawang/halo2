@@ -162,7 +162,11 @@ impl<G: PrimeGroup, ConcreteCircuit: Circuit<G::Scalar>> CircuitCost<G, Concrete
                     .map(|(c, r)| (Column::<Any>::from(*c), *r)),
             )
             .chain(cs.instance_queries.iter().map(|(c, r)| ((*c).into(), *r)))
-            .chain(cs.fixed_queries.iter().map(|(c, r)| ((*c).into(), *r)))
+            .chain(
+                cs.fixed_queries
+                    .iter()
+                    .map(|c| ((*c).into(), Rotation::cur())),
+            )
             .chain(
                 cs.permutation
                     .get_columns()

@@ -822,63 +822,42 @@ fn plonk_api() {
                     index: 6,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 0,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 2,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 3,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 4,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 1,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
             (
                 Column {
                     index: 5,
                     column_type: Fixed,
                 },
-                Rotation(
-                    0,
-                ),
             ),
         ],
         permutation: Argument {

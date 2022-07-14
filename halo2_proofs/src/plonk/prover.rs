@@ -20,7 +20,7 @@ use crate::{
         self,
         commitment::{Blind, Params},
         multiopen::{self, ProverQuery},
-        Coeff, ExtendedLagrangeCoeff, LagrangeCoeff, Polynomial,
+        Coeff, ExtendedLagrangeCoeff, LagrangeCoeff, Polynomial, Rotation,
     },
 };
 use crate::{
@@ -639,8 +639,11 @@ pub fn create_proof<
     let fixed_evals: Vec<_> = meta
         .fixed_queries
         .iter()
-        .map(|&(column, at)| {
-            eval_polynomial(&pk.fixed_polys[column.index()], domain.rotate_omega(*x, at))
+        .map(|&column| {
+            eval_polynomial(
+                &pk.fixed_polys[column.index()],
+                domain.rotate_omega(*x, Rotation::cur()),
+            )
         })
         .collect();
 
@@ -703,17 +706,11 @@ pub fn create_proof<
                 .chain(permutation.open(pk, x))
                 .chain(lookups.iter().flat_map(move |p| p.open(pk, x)).into_iter())
         })
-        .chain(
-            pk.vk
-                .cs
-                .fixed_queries
-                .iter()
-                .map(|&(column, at)| ProverQuery {
-                    point: domain.rotate_omega(*x, at),
-                    poly: &pk.fixed_polys[column.index()],
-                    blind: Blind::default(),
-                }),
-        )
+        .chain(pk.vk.cs.fixed_queries.iter().map(|&column| ProverQuery {
+            point: domain.rotate_omega(*x, Rotation::cur()),
+            poly: &pk.fixed_polys[column.index()],
+            blind: Blind::default(),
+        }))
         .chain(pk.permutation.open(x))
         // We query the h(X) polynomial at x
         .chain(vanishing.open(x));

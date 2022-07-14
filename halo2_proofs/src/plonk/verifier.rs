@@ -11,6 +11,7 @@ use crate::arithmetic::{CurveAffine, FieldExt};
 use crate::poly::{
     commitment::{Blind, Guard, Params, MSM},
     multiopen::{self, VerifierQuery},
+    Rotation,
 };
 use crate::transcript::{read_n_points, read_n_scalars, EncodedChallenge, TranscriptRead};
 
@@ -329,10 +330,10 @@ pub fn verify_proof<
                 .fixed_queries
                 .iter()
                 .enumerate()
-                .map(|(query_index, &(column, at))| {
+                .map(|(query_index, &column)| {
                     VerifierQuery::new_commitment(
                         &vk.fixed_commitments[column.index()],
-                        vk.domain.rotate_omega(*x, at),
+                        vk.domain.rotate_omega(*x, Rotation::cur()),
                         fixed_evals[query_index],
                     )
                 }),

@@ -609,7 +609,17 @@ impl<F: FieldExt> MockProver<F> {
                             move |(poly_index, poly)| match poly.evaluate(
                                 &|scalar| Value::Real(scalar),
                                 &|_| panic!("virtual selectors are removed during optimization"),
-                                &util::load(n, row, &self.cs.fixed_queries, &self.fixed),
+                                &util::load(
+                                    n,
+                                    row,
+                                    &self
+                                        .cs
+                                        .fixed_queries
+                                        .iter()
+                                        .map(|&c| (c, Rotation::cur()))
+                                        .collect::<Vec<_>>(),
+                                    &self.fixed,
+                                ),
                                 &util::load(n, row, &self.cs.advice_queries, &self.advice),
                                 &util::load_instance(
                                     n,
@@ -639,7 +649,17 @@ impl<F: FieldExt> MockProver<F> {
                                     cell_values: util::cell_values(
                                         gate,
                                         poly,
-                                        &util::load(n, row, &self.cs.fixed_queries, &self.fixed),
+                                        &util::load(
+                                            n,
+                                            row,
+                                            &self
+                                                .cs
+                                                .fixed_queries
+                                                .iter()
+                                                .map(|&c| (c, Rotation::cur()))
+                                                .collect::<Vec<_>>(),
+                                            &self.fixed,
+                                        ),
                                         &util::load(n, row, &self.cs.advice_queries, &self.advice),
                                         &util::load_instance(
                                             n,
@@ -675,10 +695,8 @@ impl<F: FieldExt> MockProver<F> {
                             &|_| panic!("virtual selectors are removed during optimization"),
                             &|query| {
                                 let query = self.cs.fixed_queries[query.index];
-                                let column_index = query.0.index();
-                                let rotation = query.1 .0;
-                                self.fixed[column_index]
-                                    [(row as i32 + n + rotation) as usize % n as usize]
+                                let column_index = query.index();
+                                self.fixed[column_index][(row as i32 + n) as usize % n as usize]
                                     .into()
                             },
                             &|query| {

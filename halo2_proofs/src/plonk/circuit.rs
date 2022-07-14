@@ -943,7 +943,7 @@ pub struct ConstraintSystem<F: Field> {
     // so far; should be same length as num_advice_columns.
     num_advice_queries: Vec<usize>,
     pub(crate) instance_queries: Vec<(Column<Instance>, Rotation)>,
-    pub(crate) fixed_queries: Vec<(Column<Fixed>, Rotation)>,
+    pub(crate) fixed_queries: Vec<Column<Fixed>>,
 
     // Permutation argument for performing equality constraints
     pub(crate) permutation: permutation::Argument,
@@ -970,7 +970,7 @@ pub struct PinnedConstraintSystem<'a, F: Field> {
     gates: PinnedGates<'a, F>,
     advice_queries: &'a Vec<(Column<Advice>, Rotation)>,
     instance_queries: &'a Vec<(Column<Instance>, Rotation)>,
-    fixed_queries: &'a Vec<(Column<Fixed>, Rotation)>,
+    fixed_queries: &'a Vec<Column<Fixed>>,
     permutation: &'a permutation::Argument,
     lookups: &'a Vec<lookup::Argument<F>>,
     constants: &'a Vec<Column<Fixed>>,
@@ -1080,14 +1080,14 @@ impl<F: Field> ConstraintSystem<F> {
     fn query_fixed_index(&mut self, column: Column<Fixed>) -> usize {
         // Return existing query, if it exists
         for (index, fixed_query) in self.fixed_queries.iter().enumerate() {
-            if fixed_query == &(column, Rotation::cur()) {
+            if fixed_query == &column {
                 return index;
             }
         }
 
         // Make a new query
         let index = self.fixed_queries.len();
-        self.fixed_queries.push((column, Rotation::cur()));
+        self.fixed_queries.push(column);
 
         index
     }
@@ -1145,9 +1145,9 @@ impl<F: Field> ConstraintSystem<F> {
         panic!("get_advice_query_index called for non-existent query");
     }
 
-    pub(crate) fn get_fixed_query_index(&self, column: Column<Fixed>, at: Rotation) -> usize {
+    pub(crate) fn get_fixed_query_index(&self, column: Column<Fixed>) -> usize {
         for (index, fixed_query) in self.fixed_queries.iter().enumerate() {
-            if fixed_query == &(column, at) {
+            if fixed_query == &column {
                 return index;
             }
         }
@@ -1171,8 +1171,7 @@ impl<F: Field> ConstraintSystem<F> {
                 Column::<Advice>::try_from(column).unwrap(),
                 Rotation::cur(),
             ),
-            Any::Fixed => self
-                .get_fixed_query_index(Column::<Fixed>::try_from(column).unwrap(), Rotation::cur()),
+            Any::Fixed => self.get_fixed_query_index(Column::<Fixed>::try_from(column).unwrap()),
             Any::Instance => self.get_instance_query_index(
                 Column::<Instance>::try_from(column).unwrap(),
                 Rotation::cur(),
