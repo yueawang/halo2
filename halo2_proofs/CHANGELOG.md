@@ -6,6 +6,10 @@ and this project adheres to Rust's notion of
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- `halo2::proofs::circuit`
+  - `VirtualCells`
+    - `query_any` has now been renamed to `query_any_at_cur`, and
+      can only be used to make queries at the current rotation.
 
 ## [0.2.0] - 2022-06-23
 ### Added
