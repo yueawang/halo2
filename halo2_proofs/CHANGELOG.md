@@ -10,6 +10,8 @@ and this project adheres to Rust's notion of
   - `VirtualCells`
     - `query_any` has now been renamed to `query_any_at_cur`, and
       can only be used to make queries at the current rotation.
+    - `query_fixed` now no longer takes a `Rotation` argument,
+      and can only be used to query the current rotation.
 
 ## [0.2.0] - 2022-06-23
 ### Added
